@@ -25,15 +25,15 @@
 
 ## 🧭 กำหนดการวันที่ 1 (โดยสังเขป)
 
-| เวลา | หัวข้อ |
-|------|--------|
-| 09:00–09:30 | ทดสอบก่อนเรียน (Pretest) + แนะนำหลักสูตรและโปรเจกต์ BLA Policy Companion |
-| 09:30–10:30 | **Module 1** Introduction to Modern Flutter Architecture (2026) |
+| เวลา        | หัวข้อ                                                                    |
+| ----------- | ------------------------------------------------------------------------- |
+| 09:00–09:30 | ทดสอบก่อนเรียน (Pretest) + แนะนำหลักสูตรและโปรเจกต์ BLA Policy Companion  |
+| 09:30–10:30 | **Module 1** Introduction to Modern Flutter Architecture (2026)           |
 | 10:30–12:00 | **Module 2** Deep Dive into Riverpod (ติดตั้ง + ProviderScope + Code Gen) |
-| 12:00–13:00 | พักกลางวัน |
-| 13:00–14:15 | **Module 3** Understanding Core Providers |
-| 14:15–15:00 | **Module 4** Consuming State (Consumer & ref) |
-| 15:00–16:00 | **Workshop Day 1** วาง Feature-first + State หน้ารายการกรมธรรม์ |
+| 12:00–13:00 | พักกลางวัน                                                                |
+| 13:00–14:15 | **Module 3** Understanding Core Providers                                 |
+| 14:15–15:00 | **Module 4** Consuming State (Consumer & ref)                             |
+| 15:00–16:00 | **Workshop Day 1** วาง Feature-first + State หน้ารายการกรมธรรม์           |
 
 ---
 
@@ -82,11 +82,11 @@ flutter doctor
 
 แนวคิด Clean Architecture แบ่งโค้ดเป็น 3 ชั้นหลัก โดยมีกฎเหล็กว่า **ชั้นในไม่รู้จักชั้นนอก** (Dependency Rule) — ชั้น Domain ซึ่งเป็นหัวใจธุรกิจต้องไม่ผูกกับ Flutter หรือ API ใด ๆ
 
-| ชั้น (Layer) | หน้าที่ | ตัวอย่างในแอป BLA |
-|-------------|---------|-------------------|
-| **Presentation** | แสดงผล UI และจัดการ State | หน้า `PolicyListPage`, Provider ของ Riverpod |
-| **Domain** | กฎทางธุรกิจ + โมเดลแก่นกลาง (Entity) | คลาส `Policy`, การคำนวณสถานะกรมธรรม์ |
-| **Data** | ดึง/บันทึกข้อมูล (API, DB, Cache) | `PolicyRepository`, การเรียก Dio, แปลง JSON |
+| ชั้น (Layer)     | หน้าที่                              | ตัวอย่างในแอป BLA                            |
+| ---------------- | ------------------------------------ | -------------------------------------------- |
+| **Presentation** | แสดงผล UI และจัดการ State            | หน้า `PolicyListPage`, Provider ของ Riverpod |
+| **Domain**       | กฎทางธุรกิจ + โมเดลแก่นกลาง (Entity) | คลาส `Policy`, การคำนวณสถานะกรมธรรม์         |
+| **Data**         | ดึง/บันทึกข้อมูล (API, DB, Cache)    | `PolicyRepository`, การเรียก Dio, แปลง JSON  |
 
 > ⚠️ **ข้อควรระวัง:** ในหลักสูตรนี้เราใช้ Clean Architecture แบบ "พอดี" (pragmatic) ไม่ยึดทุกกฎจนเกิดความซับซ้อนเกินจำเป็น เป้าหมายคือ "ทดสอบง่าย เปลี่ยนชิ้นส่วนได้" ไม่ใช่ "มีไฟล์เยอะที่สุด"
 
@@ -113,12 +113,12 @@ lib/                                   lib/
                                        └── core/  (ของใช้ร่วมทั้งแอป)
 ```
 
-| ประเด็น | Layer-first | Feature-first (ที่เราจะใช้) |
-|---------|-------------|------------------------------|
-| หาโค้ดของฟีเจอร์เดียว | กระจายหลายโฟลเดอร์ | อยู่รวมที่เดียว ค้นง่าย |
-| ทีมขนาดใหญ่ทำงานพร้อมกัน | ชนกันบ่อย (แก้โฟลเดอร์เดียวกัน) | แยกฟีเจอร์ ลดการชนกัน |
-| ลบ/ย้ายฟีเจอร์ | ยุ่งยาก ต้องตามเก็บหลายที่ | ลบโฟลเดอร์เดียวจบ |
-| เหมาะกับ | โปรเจกต์เล็ก/ตัวอย่าง | **แอประดับองค์กร** |
+| ประเด็น                  | Layer-first                     | Feature-first (ที่เราจะใช้) |
+| ------------------------ | ------------------------------- | --------------------------- |
+| หาโค้ดของฟีเจอร์เดียว    | กระจายหลายโฟลเดอร์              | อยู่รวมที่เดียว ค้นง่าย     |
+| ทีมขนาดใหญ่ทำงานพร้อมกัน | ชนกันบ่อย (แก้โฟลเดอร์เดียวกัน) | แยกฟีเจอร์ ลดการชนกัน       |
+| ลบ/ย้ายฟีเจอร์           | ยุ่งยาก ต้องตามเก็บหลายที่      | ลบโฟลเดอร์เดียวจบ           |
+| เหมาะกับ                 | โปรเจกต์เล็ก/ตัวอย่าง           | **แอประดับองค์กร**          |
 
 > ✅ **สรุปการตัดสินใจ:** สำหรับ BLA Policy Companion เราเลือก **Feature-first** เพราะรองรับการทำงานเป็นทีม แยกความรับผิดชอบชัดเจน และต่อยอดในวันที่ 2–3 (claim, auth) ได้สะอาด
 
@@ -161,13 +161,13 @@ Provider เดิม:                          Riverpod:
 └─────────────────────────────┘         └─────────────────────────────┘
 ```
 
-| คุณสมบัติ | Provider (เดิม) | Riverpod (ที่เราจะใช้) |
-|-----------|-----------------|------------------------|
-| ผูกกับ BuildContext | ใช่ | **ไม่** |
-| ความปลอดภัยตอน compile | ต่ำ | **สูง (compile-safe)** |
-| ทดสอบ (Unit Test) | ต้องมี Widget | **ทดสอบ Logic ตรง ๆ ได้** |
-| Auto-dispose เมื่อไม่ใช้ | ทำเองยาก | **มีในตัว** |
-| Code Generation | ไม่มี | **มี (`@riverpod`)** |
+| คุณสมบัติ                | Provider (เดิม) | Riverpod (ที่เราจะใช้)    |
+| ------------------------ | --------------- | ------------------------- |
+| ผูกกับ BuildContext      | ใช่             | **ไม่**                   |
+| ความปลอดภัยตอน compile   | ต่ำ             | **สูง (compile-safe)**    |
+| ทดสอบ (Unit Test)        | ต้องมี Widget   | **ทดสอบ Logic ตรง ๆ ได้** |
+| Auto-dispose เมื่อไม่ใช้ | ทำเองยาก        | **มีในตัว**               |
+| Code Generation          | ไม่มี           | **มี (`@riverpod`)**      |
 
 ### 2.2 ขั้นตอนที่ 1 — ติดตั้ง Package
 
@@ -175,36 +175,37 @@ Provider เดิม:                          Riverpod:
 
 ```bash
 # Package หลักของ Riverpod + Code Generation
-flutter pub add flutter_riverpod riverpod_annotation
+flutter pub add flutter_riverpod:^2.6.1 riverpod_annotation:^2.6.1
 
 # Package สำหรับสร้างโมเดล (ใช้หนักในวันที่ 2)
-flutter pub add freezed_annotation json_annotation
+flutter pub add freezed_annotation:^2.4.4 json_annotation:^4.9.0
 
 # Dev dependencies: ตัวสร้างโค้ดและตัวตรวจ
-flutter pub add dev:build_runner dev:riverpod_generator dev:freezed dev:json_serializable dev:custom_lint dev:riverpod_lint
+flutter pub add dev:build_runner:^2.4.13 dev:riverpod_generator:^2.6.3 dev:freezed:^2.5.7 dev:json_serializable:^6.9.0 dev:custom_lint:^0.7.0 dev:riverpod_lint:^2.6.3
 
 # Package สำหรับ UI / Design System (ใช้ตั้งแต่วันแรก): ไอคอน Hugeicons + ฟอนต์ Google Fonts
-flutter pub add hugeicons google_fonts
+flutter pub add hugeicons:^1.1.7 google_fonts:^6.2.1
 ```
 
 ตรวจสอบว่าใน `pubspec.yaml` มีรายการครบ:
 
 ```yaml
 dependencies:
-  flutter_riverpod: ^2.5.0
-  riverpod_annotation: ^2.3.0
-  freezed_annotation: ^2.4.0
+  flutter_riverpod: ^2.6.1
+  riverpod_annotation: ^2.6.1
+  freezed_annotation: ^2.4.4
   json_annotation: ^4.9.0
-  hugeicons: ^1.1.7        # ชุดไอคอน stroke-rounded (Design System)
-  google_fonts: ^6.2.1     # ฟอนต์ Inter + Anuphan (ไทย)
+  hugeicons: ^1.1.7 # ชุดไอคอน stroke-rounded (Design System)
+  google_fonts: ^6.2.1 # ฟอนต์ Inter + Anuphan (ไทย)
 
 dev_dependencies:
-  build_runner: ^2.4.0
-  riverpod_generator: ^2.4.0
-  freezed: ^2.5.0
-  json_serializable: ^6.8.0
-  custom_lint: ^0.6.0
-  riverpod_lint: ^2.3.0
+  flutter_lints: ^5.0.0
+  build_runner: ^2.4.13
+  riverpod_generator: ^2.6.3
+  freezed: ^2.5.7
+  json_serializable: ^6.9.0
+  custom_lint: ^0.7.0
+  riverpod_lint: ^2.6.3
 ```
 
 ### 2.3 ขั้นตอนที่ 2 — ครอบแอปด้วย ProviderScope
@@ -253,7 +254,7 @@ dart run build_runner build --delete-conflicting-outputs
 dart run build_runner watch --delete-conflicting-outputs
 ```
 
-> ⚠️ **ข้อควรระวังที่พบบ่อย:** ทุกไฟล์ที่ใช้ `@riverpod` ต้องมีบรรทัด `part 'ชื่อไฟล์.g.dart';` ด้านบนเสมอ มิฉะนั้น build_runner จะไม่สร้างโค้ดให้ และจะขึ้น error สีแดงว่าหา `_$...` ไม่เจอ
+> ⚠️ **ข้อควรระวังที่พบบ่อย:** ทุกไฟล์ที่ใช้ `@riverpod` ต้องมีบรรทัด `part 'ชื่อไฟล์.g.dart';` ด้านบนเสมอ มิฉะนั้น build*runner จะไม่สร้างโค้ดให้ และจะขึ้น error สีแดงว่าหา `*$...` ไม่เจอ
 
 ---
 
@@ -325,13 +326,13 @@ flutter run
 
 Riverpod มี provider หลายชนิด แต่ละชนิดเหมาะกับงานต่างกัน ตารางนี้คือแผนที่ความเข้าใจของทั้งวัน:
 
-| ชนิด Provider | ใช้เมื่อ | ค่าที่คืน |
-|---------------|---------|-----------|
-| `Provider` | ค่าคงที่/ออบเจกต์ที่ไม่เปลี่ยน เช่น Repository, config | ค่าใด ๆ (อ่านอย่างเดียว) |
-| `StateProvider` | State ง่าย ๆ ที่เปลี่ยนได้ เช่น ตัวเลข, ข้อความค้นหา | ค่าที่แก้ไขได้ตรง ๆ |
-| `FutureProvider` | ดึงข้อมูลแบบ async ครั้งเดียว | `AsyncValue<T>` |
-| `Notifier` (ใหม่) | State ที่ซับซ้อนมี Logic หลายเมธอด | คลาส State + เมธอด |
-| `AsyncNotifier` (ใหม่) | State async ที่มีทั้งดึงและแก้ไขข้อมูล | `AsyncValue<T>` + เมธอด |
+| ชนิด Provider          | ใช้เมื่อ                                               | ค่าที่คืน                |
+| ---------------------- | ------------------------------------------------------ | ------------------------ |
+| `Provider`             | ค่าคงที่/ออบเจกต์ที่ไม่เปลี่ยน เช่น Repository, config | ค่าใด ๆ (อ่านอย่างเดียว) |
+| `StateProvider`        | State ง่าย ๆ ที่เปลี่ยนได้ เช่น ตัวเลข, ข้อความค้นหา   | ค่าที่แก้ไขได้ตรง ๆ      |
+| `FutureProvider`       | ดึงข้อมูลแบบ async ครั้งเดียว                          | `AsyncValue<T>`          |
+| `Notifier` (ใหม่)      | State ที่ซับซ้อนมี Logic หลายเมธอด                     | คลาส State + เมธอด       |
+| `AsyncNotifier` (ใหม่) | State async ที่มีทั้งดึงและแก้ไขข้อมูล                 | `AsyncValue<T>` + เมธอด  |
 
 ### 3.2 Provider — สำหรับค่า/ออบเจกต์ที่อ่านอย่างเดียว
 
@@ -655,11 +656,11 @@ class _SearchBoxState extends ConsumerState<SearchBox> {
 
 นี่คือหัวใจที่ผู้เรียนต้องแยกให้ออก เพราะใช้ผิดคือต้นเหตุของบั๊ก rebuild และ performance ที่พบบ่อยที่สุด
 
-| เมธอด | ใช้เมื่อ | rebuild UI? | ใช้ที่ไหน |
-|-------|---------|-------------|----------|
-| `ref.watch()` | ต้องการ "ฟัง" ค่าและให้ UI อัปเดตตาม | ✅ ใช่ | ใน `build()` เท่านั้น |
-| `ref.read()` | เรียกเมธอด/อ่านค่าครั้งเดียว ไม่ต้องฟัง | ❌ ไม่ | ใน callback (onPressed ฯลฯ) |
-| `ref.listen()` | ทำ side-effect เมื่อค่าเปลี่ยน (เช่น แสดง SnackBar, นำทาง) | ❌ ไม่ | ใน `build()` |
+| เมธอด          | ใช้เมื่อ                                                   | rebuild UI? | ใช้ที่ไหน                   |
+| -------------- | ---------------------------------------------------------- | ----------- | --------------------------- |
+| `ref.watch()`  | ต้องการ "ฟัง" ค่าและให้ UI อัปเดตตาม                       | ✅ ใช่      | ใน `build()` เท่านั้น       |
+| `ref.read()`   | เรียกเมธอด/อ่านค่าครั้งเดียว ไม่ต้องฟัง                    | ❌ ไม่      | ใน callback (onPressed ฯลฯ) |
+| `ref.listen()` | ทำ side-effect เมื่อค่าเปลี่ยน (เช่น แสดง SnackBar, นำทาง) | ❌ ไม่      | ใน `build()`                |
 
 ```dart
 // ตัวอย่างการใช้ ref.listen ทำ side-effect (ไม่เกี่ยวกับการแสดงผล)
@@ -1727,17 +1728,18 @@ bla_policy_companion/                 ← flutter create --org com.itgenius bla_
 
 ## 📝 สรุปประจำวันที่ 1
 
-| หัวข้อ | สิ่งที่ทำได้แล้ว |
-|--------|----------------|
-| Module 1 — Architecture | เข้าใจ Clean Architecture และเลือก Feature-first เป็นโครงสร้างหลัก |
-| ★ Module 2 — Riverpod | ติดตั้ง package, ครอบ ProviderScope และเปิด Code Generation |
-| Module 3 — Core Providers | ใช้ Provider, StateProvider, FutureProvider และเข้าใจ Notifier/AsyncNotifier |
-| Module 4 — Consuming State | ใช้ ConsumerWidget และแยก watch/read/listen ได้ถูกต้อง |
-| ★ Workshop Day 1 | วาง Feature-first + จัดการ State หน้ารายการกรมธรรม์ด้วย Riverpod ครบวงจร |
+| หัวข้อ                     | สิ่งที่ทำได้แล้ว                                                             |
+| -------------------------- | ---------------------------------------------------------------------------- |
+| Module 1 — Architecture    | เข้าใจ Clean Architecture และเลือก Feature-first เป็นโครงสร้างหลัก           |
+| ★ Module 2 — Riverpod      | ติดตั้ง package, ครอบ ProviderScope และเปิด Code Generation                  |
+| Module 3 — Core Providers  | ใช้ Provider, StateProvider, FutureProvider และเข้าใจ Notifier/AsyncNotifier |
+| Module 4 — Consuming State | ใช้ ConsumerWidget และแยก watch/read/listen ได้ถูกต้อง                       |
+| ★ Workshop Day 1           | วาง Feature-first + จัดการ State หน้ารายการกรมธรรม์ด้วย Riverpod ครบวงจร     |
 
 ### ✅ ตรวจสอบความพร้อมก่อนวันพรุ่งนี้
 
 > ให้แน่ใจว่า:
+>
 > - รัน `flutter run` แล้วเห็นหน้ารายการกรมธรรม์ทำงานได้ (ค้นหา + กรองสถานะได้)
 > - มีไฟล์ `.g.dart` ถูกสร้างครบจาก `build_runner` โดยไม่มี error สีแดง
 > - เข้าใจความต่างของ `ref.watch` (ฟัง+rebuild) กับ `ref.read` (เรียกครั้งเดียว)
@@ -1751,6 +1753,6 @@ bla_policy_companion/                 ← flutter create --org com.itgenius bla_
 
 ---
 
-*เอกสารจัดทำโดย: อาจารย์สามิตร โกยม | IT Genius Engineering Co., Ltd.*
-*สำหรับการอบรม: บริษัท กรุงเทพประกันชีวิต จำกัด (มหาชน)*
-*หลักสูตร Advanced Flutter 2026 (Scalable Architecture & Riverpod) — วันที่ 1 จาก 3*
+_เอกสารจัดทำโดย: อาจารย์สามิตร โกยม | IT Genius Engineering Co., Ltd._
+_สำหรับการอบรม: บริษัท กรุงเทพประกันชีวิต จำกัด (มหาชน)_
+_หลักสูตร Advanced Flutter 2026 (Scalable Architecture & Riverpod) — วันที่ 1 จาก 3_
