@@ -175,37 +175,37 @@ Provider เดิม:                          Riverpod:
 
 ```bash
 # Package หลักของ Riverpod + Code Generation
-flutter pub add flutter_riverpod:^2.6.1 riverpod_annotation:^2.6.1
+flutter pub add flutter_riverpod:^3.0.0 riverpod_annotation:^3.0.0
 
 # Package สำหรับสร้างโมเดล (ใช้หนักในวันที่ 2)
-flutter pub add freezed_annotation:^2.4.4 json_annotation:^4.9.0
+flutter pub add freezed_annotation:^3.0.0 json_annotation:^4.9.0
 
 # Dev dependencies: ตัวสร้างโค้ดและตัวตรวจ
-flutter pub add dev:build_runner:^2.4.13 dev:riverpod_generator:^2.6.3 dev:freezed:^2.5.7 dev:json_serializable:^6.9.0 dev:custom_lint:^0.7.0 dev:riverpod_lint:^2.6.3
+flutter pub add dev:build_runner:^2.4.13 dev:riverpod_generator:^3.0.0 dev:freezed:^3.0.0 dev:json_serializable:^6.9.0 dev:custom_lint:^0.8.1 dev:riverpod_lint:^3.0.0
 
 # Package สำหรับ UI / Design System (ใช้ตั้งแต่วันแรก): ไอคอน Hugeicons + ฟอนต์ Google Fonts
-flutter pub add hugeicons:^1.1.7 google_fonts:^6.2.1
+flutter pub add google_fonts:^6.2.1 hugeicons:^1.1.7
 ```
 
 ตรวจสอบว่าใน `pubspec.yaml` มีรายการครบ:
 
 ```yaml
 dependencies:
-  flutter_riverpod: ^2.6.1
-  riverpod_annotation: ^2.6.1
-  freezed_annotation: ^2.4.4
+  flutter_riverpod: ^3.0.0
+  riverpod_annotation: ^3.0.0
+  google_fonts: ^6.2.1
+  freezed_annotation: ^3.0.0
   json_annotation: ^4.9.0
-  hugeicons: ^1.1.7 # ชุดไอคอน stroke-rounded (Design System)
-  google_fonts: ^6.2.1 # ฟอนต์ Inter + Anuphan (ไทย)
+  hugeicons: ^1.1.7
 
 dev_dependencies:
   flutter_lints: ^5.0.0
   build_runner: ^2.4.13
-  riverpod_generator: ^2.6.3
-  freezed: ^2.5.7
+  riverpod_generator: ^3.0.0
+  freezed: ^3.0.0
   json_serializable: ^6.9.0
-  custom_lint: ^0.7.0
-  riverpod_lint: ^2.6.3
+  custom_lint: ^0.8.1
+  riverpod_lint: ^3.0.0
 ```
 
 ### 2.3 ขั้นตอนที่ 2 — ครอบแอปด้วย ProviderScope
