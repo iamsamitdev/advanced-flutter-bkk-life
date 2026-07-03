@@ -26,15 +26,15 @@
 
 ## 🧭 กำหนดการวันที่ 2 (โดยสังเขป)
 
-| เวลา | หัวข้อ |
-|------|--------|
-| 09:00–09:15 | ทบทวนวันที่ 1 + ภาพรวมวันนี้ |
-| 09:15–10:15 | **Module 1** Asynchronous Data Management (AsyncValue & AsyncNotifier) |
-| 10:15–11:15 | **Module 2** Smart Caching & Optimization (keepAlive, Auto-dispose, Polling) |
-| 11:15–12:00 | **Module 3** Dependency Injection with Riverpod |
-| 12:00–13:00 | พักกลางวัน |
+| เวลา        | หัวข้อ                                                                         |
+| ----------- | ------------------------------------------------------------------------------ |
+| 09:00–09:15 | ทบทวนวันที่ 1 + ภาพรวมวันนี้                                                   |
+| 09:15–10:15 | **Module 1** Asynchronous Data Management (AsyncValue & AsyncNotifier)         |
+| 10:15–11:15 | **Module 2** Smart Caching & Optimization (keepAlive, Auto-dispose, Polling)   |
+| 11:15–12:00 | **Module 3** Dependency Injection with Riverpod                                |
+| 12:00–13:00 | พักกลางวัน                                                                     |
 | 13:00–14:00 | **Module 4** Advanced API Integration ด้วย Dio (Interceptors + Error Handling) |
-| 14:00–15:00 | **Module 5** Skeleton Loading, Shimmer UI & Lazy Loading |
+| 14:00–15:00 | **Module 5** Skeleton Loading, Shimmer UI & Lazy Loading                       |
 | 15:00–16:00 | **Workshop Day 2** API + Caching + Pull-to-refresh + Skeleton + Claim Mutation |
 
 ---
@@ -86,12 +86,12 @@ return asyncPolicies.when(
 );
 ```
 
-| เมธอด/พร็อพเพอร์ตี้ | ความหมาย |
-|----------------------|----------|
-| `.when()` | จัดการครบ 3 สถานะ (loading/error/data) |
-| `.valueOrNull` | ดึงค่าถ้ามี ไม่งั้นได้ `null` (ไม่ throw) |
-| `.isLoading` | กำลังโหลดอยู่หรือไม่ (true/false) |
-| `.hasError` | มี error หรือไม่ |
+| เมธอด/พร็อพเพอร์ตี้                  | ความหมาย                                     |
+| ------------------------------------ | -------------------------------------------- |
+| `.when()`                            | จัดการครบ 3 สถานะ (loading/error/data)       |
+| `.valueOrNull`                       | ดึงค่าถ้ามี ไม่งั้นได้ `null` (ไม่ throw)    |
+| `.isLoading`                         | กำลังโหลดอยู่หรือไม่ (true/false)            |
+| `.hasError`                          | มี error หรือไม่                             |
 | `.when(skipLoadingOnRefresh: false)` | ควบคุมว่าให้แสดง loading ตอน refresh หรือไม่ |
 
 ### 1.3 AsyncNotifier — ดึงและแก้ไขข้อมูลในคลาสเดียว
@@ -167,10 +167,10 @@ Future<List<Policy>> policyList(PolicyListRef ref) async {
 }
 ```
 
-| สถานการณ์ | ควรใช้ |
-|-----------|--------|
-| ข้อมูลเปลี่ยนบ่อย/เบา เช่น แจ้งเตือน | Auto-dispose (ปริยาย) |
-| ข้อมูลโหลดหนัก/ช้า เช่น รายการกรมธรรม์ | `keepAlive()` |
+| สถานการณ์                                    | ควรใช้                 |
+| -------------------------------------------- | ---------------------- |
+| ข้อมูลเปลี่ยนบ่อย/เบา เช่น แจ้งเตือน         | Auto-dispose (ปริยาย)  |
+| ข้อมูลโหลดหนัก/ช้า เช่น รายการกรมธรรม์       | `keepAlive()`          |
 | ข้อมูลที่ต้อง fresh เสมอ เช่น ยอดเงินคงเหลือ | Auto-dispose + Polling |
 
 ### 2.3 Polling & Auto-refresh — ดึงข้อมูลซ้ำเป็นรอบ
@@ -195,11 +195,11 @@ Future<ClaimStatus> claimStatus(ClaimStatusRef ref, String claimId) async {
 
 ### 2.4 invalidate vs refresh
 
-| คำสั่ง | พฤติกรรม | ใช้เมื่อ |
-|--------|----------|---------|
+| คำสั่ง                     | พฤติกรรม                                                       | ใช้เมื่อ                    |
+| -------------------------- | -------------------------------------------------------------- | --------------------------- |
 | `ref.invalidate(provider)` | ทำเครื่องหมายว่า "เก่าแล้ว" จะดึงใหม่เมื่อมีคน watch ครั้งหน้า | ต้องการให้ refresh แบบ lazy |
-| `ref.refresh(provider)` | สั่งดึงใหม่ทันที และคืนค่าใหม่กลับมา | ต้องการผลลัพธ์ใหม่เดี๋ยวนี้ |
-| `ref.invalidateSelf()` | provider สั่งให้ตัวเองดึงใหม่ | ใช้ใน polling |
+| `ref.refresh(provider)`    | สั่งดึงใหม่ทันที และคืนค่าใหม่กลับมา                           | ต้องการผลลัพธ์ใหม่เดี๋ยวนี้ |
+| `ref.invalidateSelf()`     | provider สั่งให้ตัวเองดึงใหม่                                  | ใช้ใน polling               |
 
 ---
 
@@ -381,11 +381,11 @@ ApiException mapDioError(DioException error) {
 
 ### 5.1 ทำไมต้องเลิกใช้ Loading Spinner กลางจอ
 
-| รูปแบบ Loading | ผู้ใช้รับรู้ | เหมาะกับ |
-|----------------|-------------|----------|
-| Spinner กลางจอ | "กำลังโหลด แต่ไม่รู้ว่านานแค่ไหน/ได้อะไร" | งานสั้น ๆ, ปุ่มกด, dialog |
-| **Skeleton Screen** | "เห็นเค้าโครงเนื้อหาแล้ว ใกล้เสร็จ" | หน้า list / รายละเอียดที่โหลดจาก API |
-| Progress bar (%) | "รู้ความคืบหน้าชัดเจน" | ดาวน์โหลด/อัปโหลดที่วัด % ได้ |
+| รูปแบบ Loading      | ผู้ใช้รับรู้                              | เหมาะกับ                             |
+| ------------------- | ----------------------------------------- | ------------------------------------ |
+| Spinner กลางจอ      | "กำลังโหลด แต่ไม่รู้ว่านานแค่ไหน/ได้อะไร" | งานสั้น ๆ, ปุ่มกด, dialog            |
+| **Skeleton Screen** | "เห็นเค้าโครงเนื้อหาแล้ว ใกล้เสร็จ"       | หน้า list / รายละเอียดที่โหลดจาก API |
+| Progress bar (%)    | "รู้ความคืบหน้าชัดเจน"                    | ดาวน์โหลด/อัปโหลดที่วัด % ได้        |
 
 > 💡 **หลักคิด UX:** Skeleton ที่ดีต้องมี "รูปร่างใกล้เคียงเนื้อหาจริง" (การ์ด, บรรทัดข้อความ, วงกลม avatar) เพื่อให้สายตาผู้ใช้ปรับตัวล่วงหน้า เมื่อข้อมูลจริงมาถึงจึงไม่กระตุก (layout shift)
 
@@ -608,20 +608,20 @@ class _PaymentHistoryPageState extends ConsumerState<PaymentHistoryPage> {
 
 **ไฟล์เพิ่มใหม่ (A)** — 10 ไฟล์ + generated อีก 8:
 
-| ไฟล์ใหม่                                            | หน้าที่                                                        |
-| ---------------------------------------------------- | -------------------------------------------------------------- |
-| `core/config/app_config.dart`                        | ค่า config กลาง: baseUrl, demo token, timeout                   |
-| `core/network/api_exception.dart`                    | แปลง `DioException` → ข้อความไทยที่เป็นมิตร                     |
-| `core/network/auth_interceptor.dart`                 | แนบ Bearer token ทุก request + ดักจับ 401                       |
-| `core/network/dio_client.dart` (+`.g`)               | Provider ของ Dio (ประกอบ config + interceptors)                 |
-| `core/utils/date_format.dart`                        | `thaiDate()` (พ.ศ.) + `money()` (คอมมา) ใช้ร่วม claim/payment   |
-| `claim/domain/claim_record.dart`                     | โมเดลประวัติสินไหม + `fromJson` เขียนมือ                        |
-| `claim/data/claim_repository.dart` (+`.g`)           | GET /claims + `claimListProvider`                               |
-| `claim/presentation/controllers/claim_controller.dart` (+`.g`) | Mutation ยื่นสินไหม + invalidate รายการ              |
-| `payment/domain/payment.dart`                        | โมเดลรายการชำระเบี้ย                                            |
-| `payment/data/payment_repository.dart` (+`.g`)       | GET /payments?page=&limit= (แบ่งหน้า)                           |
-| `payment/presentation/controllers/payment_history_controller.dart` (+`.g`) | Pagination / Infinite Scroll             |
-| `policy/domain/policy.freezed.dart`, `policy.g.dart` | (build_runner สร้างจาก `@freezed`)                              |
+| ไฟล์ใหม่                                                                   | หน้าที่                                                       |
+| -------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| `core/config/app_config.dart`                                              | ค่า config กลาง: baseUrl, demo token, timeout                 |
+| `core/network/api_exception.dart`                                          | แปลง `DioException` → ข้อความไทยที่เป็นมิตร                   |
+| `core/network/auth_interceptor.dart`                                       | แนบ Bearer token ทุก request + ดักจับ 401                     |
+| `core/network/dio_client.dart` (+`.g`)                                     | Provider ของ Dio (ประกอบ config + interceptors)               |
+| `core/utils/date_format.dart`                                              | `thaiDate()` (พ.ศ.) + `money()` (คอมมา) ใช้ร่วม claim/payment |
+| `claim/domain/claim_record.dart`                                           | โมเดลประวัติสินไหม + `fromJson` เขียนมือ                      |
+| `claim/data/claim_repository.dart` (+`.g`)                                 | GET /claims + `claimListProvider`                             |
+| `claim/presentation/controllers/claim_controller.dart` (+`.g`)             | Mutation ยื่นสินไหม + invalidate รายการ                       |
+| `payment/domain/payment.dart`                                              | โมเดลรายการชำระเบี้ย                                          |
+| `payment/data/payment_repository.dart` (+`.g`)                             | GET /payments?page=&limit= (แบ่งหน้า)                         |
+| `payment/presentation/controllers/payment_history_controller.dart` (+`.g`) | Pagination / Infinite Scroll                                  |
+| `policy/domain/policy.freezed.dart`, `policy.g.dart`                       | (build_runner สร้างจาก `@freezed`)                            |
 
 **ไฟล์ที่แก้ไข (M)** — `pubspec.yaml` (เพิ่ม dio + skeletonizer), `policy/domain/policy.dart` (→ freezed + `PolicyFake`), `policy/data/policy_repository.dart` (mock → Dio), `policy_list_controller.dart` (FutureProvider → AsyncNotifier + cache), `policy_list_page.dart` (Refresh + Skeleton + ErrorBox), `policy_detail_page.dart` (ส่ง `policyId` เข้า sheet), `claims_page.dart` (API จริง + skeleton), `file_claim_sheet.dart` (mock → ClaimController), `payments_page.dart` (ประวัติ → Infinite Scroll), `home_page.dart` (แก้ const เล็กน้อย — ไม่มีผลเชิงพฤติกรรม)
 
@@ -1048,6 +1048,7 @@ List<Policy> filteredPolicyList(FilteredPolicyListRef ref) {
 ```
 
 > 🔗 **การเชื่อมโยง / จุดสังเกต 3 จุด:**
+>
 > 1. **Caching:** `ref.keepAlive()` คืน link ที่ทำให้ provider ไม่ถูก dispose เมื่อไม่มีใคร watch — เราตั้ง `Timer` 5 นาทีค่อย `link.close` และผูก `ref.onDispose(timer.cancel)` กัน timer ค้าง → สลับแท็บไปมา **ไม่ยิง API ซ้ำ** ภายใน 5 นาที
 > 2. **refresh() ต่างจาก invalidate:** refresh ตั้ง loading เองแล้ว `AsyncValue.guard` จับ error ให้กลายเป็น `AsyncError` (UI ไม่ crash) — เหมาะกับ Pull-to-refresh · ส่วน `ref.invalidate(...)` ใช้จากภายนอก เช่นใน `ClaimController` หลังยื่นสินไหมสำเร็จ
 > 3. **`valueOrNull`** (เดิม Day 1 ใช้ `.value`) — ตั้งแต่ Riverpod 2.6 แนะนำ `valueOrNull` เพราะ `.value` บน `AsyncError` จะ throw ส่วน `valueOrNull` คืน null เฉย ๆ ปลอดภัยกว่าใน provider ที่คำนวณต่อยอด
@@ -1333,6 +1334,7 @@ class _PolicyCard extends StatelessWidget {
 ```
 
 > 🔗 **การเชื่อมโยง / จุดสังเกต:**
+>
 > - `RefreshIndicator.onRefresh` เรียก `refresh()` ของ AsyncNotifier — และต้องใส่ `physics: AlwaysScrollableScrollPhysics()` มิฉะนั้นตอนรายการสั้นจนไม่ scroll จะ "ลากลง" ไม่ได้
 > - Skeleton ใช้ `_PolicyCard` **ตัวเดียวกับของจริง** โดยป้อน `PolicyFake.fake()` — skeleton จึงหน้าตาตรงกับ UI จริงเสมอ (ข้อได้เปรียบของ skeletonizer เหนือการวาดโครงเอง)
 > - `_ErrorBox` แสดง `'$e'` ซึ่งได้ข้อความไทยจาก `ApiException.toString()` — เส้นทาง error ไหลจาก `mapDioError` → repository throw → `AsyncValue.guard`/build จับ → UI แสดง โดย**ไม่มี try/catch ใน UI เลย**
@@ -1438,6 +1440,7 @@ Future<List<ClaimRecord>> claimList(ClaimListRef ref) async {
 
 ```dart
 // lib/features/claim/presentation/controllers/claim_controller.dart
+// lib/features/claim/presentation/controllers/claim_controller.dart
 import 'dart:async';
 
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -1463,17 +1466,22 @@ class ClaimController extends _$ClaimController {
     required String reason,
   }) async {
     state = const AsyncValue.loading();
-    state = await AsyncValue.guard(() async {
-      final claimRef = await ref.read(policyRepositoryProvider).submitClaim(
-            policyId: policyId,
-            amount: amount,
-            reason: reason,
-          );
+    final result = await AsyncValue.guard(() {
+      return ref
+          .read(policyRepositoryProvider)
+          .submitClaim(policyId: policyId, amount: amount, reason: reason);
+    });
+
+    // provider นี้อาจถูก dispose ระหว่างรอ (เช่น ปิด bottom sheet ก่อนยื่นเสร็จ)
+    // ต้องเช็ค ref.mounted ก่อนใช้ ref/state ต่อ ไม่งั้นจะเจอ UnmountedRefException
+    if (!ref.mounted) return;
+
+    state = result;
+    if (result.hasValue) {
       // ยื่นสำเร็จ → สั่งให้รายการสินไหม + กรมธรรม์โหลดใหม่
       ref.invalidate(claimListProvider);
       ref.invalidate(policyListProvider);
-      return claimRef;
-    });
+    }
   }
 }
 ```
@@ -1548,31 +1556,42 @@ class _FileClaimSheetState extends ConsumerState<FileClaimSheet> {
     setState(() => _submitting = true);
 
     // Day 2: ถ้าเปิดจากหน้าสินไหมรวม (ไม่ระบุกรมธรรม์) ใช้ค่าเริ่มต้น P001 เพื่อสาธิต
-    await ref.read(claimControllerProvider.notifier).submit(
+    // ผลลัพธ์ (สำเร็จ/พลาด) จะถูกจัดการผ่าน ref.listen ใน build() แทนการอ่าน state ตรงนี้
+    // เพราะ claimControllerProvider เป็น autoDispose — ถ้าไม่มีใคร watch/listen อยู่
+    // มันอาจถูก dispose ไปก่อนที่เราจะอ่านผลลัพธ์ทัน
+    await ref
+        .read(claimControllerProvider.notifier)
+        .submit(
           policyId: widget.policyId ?? 'P001',
           amount: amount,
           reason: _reason.text.trim(),
         );
-
-    if (!mounted) return;
-    final result = ref.read(claimControllerProvider);
-    setState(() => _submitting = false);
-    result.when(
-      data: (ref0) {
-        if (ref0 != null) setState(() => _claimRef = ref0);
-      },
-      error: (e, _) => _toast('ยื่นไม่สำเร็จ: $e'),
-      loading: () {},
-    );
   }
 
   void _toast(String msg) {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(msg)));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
   }
 
   @override
   Widget build(BuildContext context) {
+    // ต้อง listen provider นี้ระหว่างที่ sheet ยังเปิดอยู่ ไม่งั้น autoDispose
+    // จะเคลียร์ผลลัพธ์ทิ้งก่อนที่ UI จะทันแสดงหน้า success
+    ref.listen<AsyncValue<String?>>(claimControllerProvider, (previous, next) {
+      next.whenOrNull(
+        data: (claimRef) {
+          if (claimRef == null) return;
+          setState(() {
+            _submitting = false;
+            _claimRef = claimRef;
+          });
+        },
+        error: (e, _) {
+          setState(() => _submitting = false);
+          _toast('ยื่นไม่สำเร็จ: $e');
+        },
+      );
+    });
+
     final media = MediaQuery.of(context);
     final bottomInset = media.viewInsets.bottom + media.padding.bottom;
     return Container(
@@ -1608,8 +1627,10 @@ class _FileClaimSheetState extends ConsumerState<FileClaimSheet> {
       Text('ยื่นสินไหม', style: AppType.h2),
       if (widget.policyName != null) ...[
         const SizedBox(height: 2),
-        Text(widget.policyName!,
-            style: AppType.caption.copyWith(color: AppColors.primary)),
+        Text(
+          widget.policyName!,
+          style: AppType.caption.copyWith(color: AppColors.primary),
+        ),
       ],
       const SizedBox(height: 16),
       AppTextField(
@@ -1656,8 +1677,10 @@ class _FileClaimSheetState extends ConsumerState<FileClaimSheet> {
       Center(child: Text('ยื่นสินไหมสำเร็จ', style: AppType.h2)),
       const SizedBox(height: 4),
       Center(
-        child: Text('เลขอ้างอิงการยื่น',
-            style: AppType.caption.copyWith(color: AppColors.textSubtle)),
+        child: Text(
+          'เลขอ้างอิงการยื่น',
+          style: AppType.caption.copyWith(color: AppColors.textSubtle),
+        ),
       ),
       const SizedBox(height: 10),
       Center(
@@ -1667,8 +1690,10 @@ class _FileClaimSheetState extends ConsumerState<FileClaimSheet> {
             color: AppColors.background,
             borderRadius: BorderRadius.circular(AppSpacing.rMd),
           ),
-          child: Text(ref,
-              style: AppType.h2.copyWith(color: AppColors.primary)),
+          child: Text(
+            ref,
+            style: AppType.h2.copyWith(color: AppColors.primary),
+          ),
         ),
       ),
       const SizedBox(height: 20),
@@ -1679,9 +1704,11 @@ class _FileClaimSheetState extends ConsumerState<FileClaimSheet> {
     ];
   }
 }
+
 ```
 
 > 🔗 **การเชื่อมโยง / จุดสังเกต:**
+>
 > - Sheet ยังถูกเรียกจาก 3 ที่เหมือน Day 1 แต่ signature เพิ่ม `policyId` — `PolicyDetailPage` ส่งครบ (`policyId: policy.id, policyName: policy.planName`) ส่วนหน้า Home/Claims ที่ไม่รู้กรมธรรม์ใช้ค่า default `'P001'` เพื่อสาธิต
 > - ปุ่มยืนยันกันกดซ้ำ: ระหว่างส่ง `_submitting = true` → `onPressed: null` → `AppButton.primary` กลายเป็นสีเทา disabled อัตโนมัติ (พฤติกรรมที่ออกแบบไว้ตั้งแต่ Day 1)
 > - หลัง `submit()` เสร็จ อ่านผลด้วย `ref.read(claimControllerProvider)` แล้ว `result.when(...)` — สำเร็จสลับเป็นหน้าเลขอ้างอิง (เลขจริงจาก API), พลาดเด้ง SnackBar ข้อความไทยจาก `ApiException`
@@ -2379,6 +2406,7 @@ class _PaymentTile extends StatelessWidget {
 ```
 
 > 🔗 **การเชื่อมโยง / จุดสังเกต:**
+>
 > - เปลี่ยนจาก `StatelessWidget` (Day 1) เป็น `ConsumerStatefulWidget` เพราะต้องมี `ScrollController` + lifecycle (`initState`/`dispose`) — ตรงแพตเทิร์น Module 4 Day 1
 > - Infinite Scroll: listener เช็ค `pixels >= maxScrollExtent - 300` (เผื่อระยะ 300px ให้โหลดก่อนถึงจริง) → `loadMore()` → เมื่อได้ข้อมูล `state` เปลี่ยน → ListView ต่อรายการ + spinner ท้าย list แสดงเฉพาะเมื่อ `hasMore`
 > - ส่วนบนของหน้า (บิลครบกำหนด/ช่องทางชำระ) ยังเป็น static UI ตาม Day 1 — เราอัปเกรดเฉพาะ "ประวัติการชำระ" เป็นของจริง แสดงการอยู่ร่วมกันของ static + dynamic content ในหน้าเดียว
@@ -2453,15 +2481,15 @@ mixin _$Policy {
 
 **11.3 `.g.dart` ของ Riverpod อีก 6 ไฟล์** — แพตเทิร์นเดียวกับที่เรียนใน Day 1 ทุกไฟล์ สรุปสิ่งที่แต่ละตัว generate:
 
-| ไฟล์ generated                    | provider ที่ได้                                    | ชนิด                                     |
-| ---------------------------------- | --------------------------------------------------- | ----------------------------------------- |
-| `dio_client.g.dart`                | `dioClientProvider`                                 | `AutoDisposeProvider<Dio>`                |
-| `policy_repository.g.dart`         | `policyRepositoryProvider`                          | `AutoDisposeProvider<PolicyRepository>`   |
-| `policy_list_controller.g.dart`    | `policyListProvider` ⭐ + search/filter/filtered     | ⭐ `AutoDisposeAsyncNotifierProvider<PolicyList, List<Policy>>` |
-| `claim_repository.g.dart`          | `claimRepositoryProvider`, `claimListProvider`      | Provider + `AutoDisposeFutureProvider`    |
-| `claim_controller.g.dart`          | `claimControllerProvider`                           | `AutoDisposeAsyncNotifierProvider<ClaimController, String?>` |
-| `payment_repository.g.dart`        | `paymentRepositoryProvider`                         | `AutoDisposeProvider<PaymentRepository>`  |
-| `payment_history_controller.g.dart`| `paymentHistoryControllerProvider`                  | `AutoDisposeAsyncNotifierProvider<PaymentHistoryController, List<Payment>>` |
+| ไฟล์ generated                      | provider ที่ได้                                  | ชนิด                                                                        |
+| ----------------------------------- | ------------------------------------------------ | --------------------------------------------------------------------------- |
+| `dio_client.g.dart`                 | `dioClientProvider`                              | `AutoDisposeProvider<Dio>`                                                  |
+| `policy_repository.g.dart`          | `policyRepositoryProvider`                       | `AutoDisposeProvider<PolicyRepository>`                                     |
+| `policy_list_controller.g.dart`     | `policyListProvider` ⭐ + search/filter/filtered | ⭐ `AutoDisposeAsyncNotifierProvider<PolicyList, List<Policy>>`             |
+| `claim_repository.g.dart`           | `claimRepositoryProvider`, `claimListProvider`   | Provider + `AutoDisposeFutureProvider`                                      |
+| `claim_controller.g.dart`           | `claimControllerProvider`                        | `AutoDisposeAsyncNotifierProvider<ClaimController, String?>`                |
+| `payment_repository.g.dart`         | `paymentRepositoryProvider`                      | `AutoDisposeProvider<PaymentRepository>`                                    |
+| `payment_history_controller.g.dart` | `paymentHistoryControllerProvider`               | `AutoDisposeAsyncNotifierProvider<PaymentHistoryController, List<Payment>>` |
 
 ⭐ จุดยืนยันสำคัญ: ใน `policy_list_controller.g.dart` จะเห็นว่า `policyListProvider` เปลี่ยนชนิดจาก `AutoDisposeFutureProvider` (Day 1) เป็น `AutoDisposeAsyncNotifierProvider<PolicyList, List<Policy>>` — **ชื่อเดิม ชนิดใหม่** ตามที่ออกแบบไว้:
 
@@ -2592,18 +2620,19 @@ bla_policy_companion/
 
 ## 📝 สรุปประจำวันที่ 2
 
-| หัวข้อ | สิ่งที่ทำได้แล้ว |
-|--------|----------------|
-| Module 1 — Async Data | จัดการ loading/data/error ด้วย AsyncValue และ AsyncNotifier |
-| Module 2 — Caching | ใช้ keepAlive, auto-dispose, polling และเข้าใจ invalidate/refresh |
-| Module 3 — DI | ฉีด Repository/Dio เป็นลูกโซ่ผ่าน Riverpod โดยไม่พึ่ง package อื่น |
-| Module 4 — Dio | ตั้งค่า Dio, ทำ Interceptors และ Error Mapping อย่างเป็นระบบ |
-| Module 5 — Skeleton/Lazy | ทำ Skeleton/Shimmer UI และ Lazy Loading (Pagination + Infinite Scroll) |
-| ★ Workshop Day 2 | API จริง + Caching + Pull-to-refresh + Skeleton + Claim Mutation ครบวงจร |
+| หัวข้อ                   | สิ่งที่ทำได้แล้ว                                                         |
+| ------------------------ | ------------------------------------------------------------------------ |
+| Module 1 — Async Data    | จัดการ loading/data/error ด้วย AsyncValue และ AsyncNotifier              |
+| Module 2 — Caching       | ใช้ keepAlive, auto-dispose, polling และเข้าใจ invalidate/refresh        |
+| Module 3 — DI            | ฉีด Repository/Dio เป็นลูกโซ่ผ่าน Riverpod โดยไม่พึ่ง package อื่น       |
+| Module 4 — Dio           | ตั้งค่า Dio, ทำ Interceptors และ Error Mapping อย่างเป็นระบบ             |
+| Module 5 — Skeleton/Lazy | ทำ Skeleton/Shimmer UI และ Lazy Loading (Pagination + Infinite Scroll)   |
+| ★ Workshop Day 2         | API จริง + Caching + Pull-to-refresh + Skeleton + Claim Mutation ครบวงจร |
 
 ### ✅ ตรวจสอบความพร้อมก่อนวันพรุ่งนี้
 
 > ให้แน่ใจว่า:
+>
 > - ดึงข้อมูลผ่าน Repository ที่ใช้ Dio ได้ และ Pull-to-refresh ทำงาน
 > - เห็น Skeleton Loading ตอนเปิดหน้าครั้งแรก (skeletonizer ทำงานถูกต้อง)
 > - เข้าใจว่า `AsyncValue.guard` ช่วยจับ error แทน try/catch อย่างไร
@@ -2618,6 +2647,6 @@ bla_policy_companion/
 
 ---
 
-*เอกสารจัดทำโดย: อาจารย์สามิตร โกยม | IT Genius Engineering Co., Ltd.*
-*สำหรับการอบรม: บริษัท กรุงเทพประกันชีวิต จำกัด (มหาชน)*
-*หลักสูตร Advanced Flutter 2026 (Scalable Architecture & Riverpod) — วันที่ 2 จาก 3*
+_เอกสารจัดทำโดย: อาจารย์สามิตร โกยม | IT Genius Engineering Co., Ltd._
+_สำหรับการอบรม: บริษัท กรุงเทพประกันชีวิต จำกัด (มหาชน)_
+_หลักสูตร Advanced Flutter 2026 (Scalable Architecture & Riverpod) — วันที่ 2 จาก 3_
