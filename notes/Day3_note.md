@@ -415,6 +415,60 @@ openssl s_client -connect api.bla-demo.example.com:443 -servername api.bla-demo.
   | openssl enc -base64
 ```
 
+ตัวอย่างของ ดึง SPKI SHA-256 fingerprint ของ www.google.com:
+
+```bash
+openssl s_client -connect www.google.com:443 -servername www.google.com < /dev/null 2>/dev/null \
+  | openssl x509 -pubkey -noout \
+  | openssl pkey -pubin -outform der \
+  | openssl dgst -sha256 -binary \
+  | openssl enc -base64
+```
+
+**อธิบายแต่ละขั้นของ pipeline** (5 ขั้นตอน ต่อกันเพื่อแปลง certificate → public key → SPKI hash → base64):
+
+**ขั้นที่ 1 — `openssl s_client` (ต่อ TLS ไปดึง certificate)**
+
+| Flag | ความหมาย |
+|---|---|
+| `-connect api.bla-demo.example.com:443` | ระบุ host และ port ที่จะเปิด TLS connection ไปหา (443 = HTTPS) |
+| `-servername api.bla-demo.example.com` | ส่ง **SNI** (Server Name Indication) ไปใน TLS handshake — จำเป็นเมื่อเซิร์ฟเวอร์เดียวโฮสต์หลายโดเมน (เช่นอยู่หลัง CDN/load balancer) ถ้าไม่ใส่อาจได้ certificate ผิดใบ |
+| `< /dev/null` | ป้อน input ว่างให้คำสั่ง — ปกติ `s_client` จะค้างรอให้เราพิมพ์ข้อมูลส่งไปหาเซิร์ฟเวอร์ การ redirect จาก `/dev/null` ทำให้มัน handshake เสร็จแล้วปิด connection ทันที (ไม่ค้าง) |
+| `2>/dev/null` | ทิ้งข้อความ stderr (พวก log ของ handshake, verify chain) เพื่อไม่ให้ปนกับ output ที่จะส่งเข้า pipe ถัดไป |
+
+Output ของขั้นนี้มี certificate ในรูป PEM ปนอยู่ ซึ่งขั้นถัดไปจะแกะออกมา
+
+**ขั้นที่ 2 — `openssl x509 -pubkey -noout` (แกะ public key ออกจาก cert)**
+
+| Flag | ความหมาย |
+|---|---|
+| `-pubkey` | พิมพ์เฉพาะ **public key** (ในรูป PEM) ที่อยู่ในตัว certificate ออกมา |
+| `-noout` | **ไม่ต้อง** พิมพ์ตัว certificate เองออกมาด้วย — ผลลัพธ์จึงเหลือแค่บล็อก `-----BEGIN PUBLIC KEY-----` อย่างเดียว |
+
+**ขั้นที่ 3 — `openssl pkey -pubin -outform der` (แปลง key เป็น DER)**
+
+| Flag | ความหมาย |
+|---|---|
+| `-pubin` | บอกว่า input ที่รับเข้ามาเป็น **public key** (ค่า default ของ `pkey` คือคาดหวัง private key ถ้าไม่ใส่จะ error) |
+| `-outform der` | แปลง output จาก PEM (base64 + header) เป็น **DER** ซึ่งเป็น binary encoding ของโครงสร้าง SubjectPublicKeyInfo (SPKI) — ต้อง hash จากรูป DER นี้เท่านั้นถึงจะได้ค่า pin ที่ตรงมาตรฐาน |
+
+**ขั้นที่ 4 — `openssl dgst -sha256 -binary` (คำนวณ hash)**
+
+| Flag | ความหมาย |
+|---|---|
+| `-sha256` | ใช้อัลกอริทึม SHA-256 คำนวณ digest ของ DER bytes |
+| `-binary` | ให้ output เป็น **raw binary 32 bytes** แทนที่จะเป็น hex string ที่มี prefix (`SHA2-256(stdin)= ...`) — จำเป็นเพราะขั้นถัดไปจะเอา binary ไป base64 ตรง ๆ ถ้าไม่ใส่ flag นี้จะได้ค่า pin ผิด |
+
+**ขั้นที่ 5 — `openssl enc -base64` (encode เป็นข้อความ)**
+
+| Flag | ความหมาย |
+|---|---|
+| `-base64` | เข้ารหัส binary hash 32 bytes เป็น **Base64** ได้ผลลัพธ์เป็นสตริง 44 ตัวอักษร (ลงท้าย `=`) เช่น `47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=` |
+
+ค่าที่ได้คือ SPKI fingerprint ที่เอาไปใช้ pin ได้เลย เช่นในรูปแบบ `sha256/<ค่า base64>` ของ OkHttp หรือใส่ในลิสต์ pin ของแพ็กเกจ pinning ฝั่ง Flutter
+
+> 💡 **จุดที่คนพลาดบ่อย 2 จุด:** ต้อง hash จาก **DER ไม่ใช่ PEM** (ขั้นที่ 3) และต้องใช้ `-binary` ก่อน base64 (ขั้นที่ 4) — พลาดจุดใดจุดหนึ่งจะได้ fingerprint ที่ไม่ตรงกับที่ไลบรารีฝั่งแอปคำนวณ ทำให้ pinning fail ทั้งที่ certificate ถูกต้อง
+
 ### 2.4 Data Security & Encryption — เข้ารหัส Payload และซ่อนโค้ด
 
 แม้จะมี HTTPS + SSL Pinning แล้ว ข้อมูลที่อ่อนไหวมาก (เช่น เลขกรมธรรม์, ข้อมูลสุขภาพ) อาจต้องการการเข้ารหัสอีกชั้น (end-to-end / application-level) เพื่อให้แม้ payload หลุดออกไปก็อ่านไม่ได้ เราใช้ **AES** ผ่านแพ็กเกจ `encrypt` (ซึ่งใช้ `pointycastle` เบื้องหลัง)
