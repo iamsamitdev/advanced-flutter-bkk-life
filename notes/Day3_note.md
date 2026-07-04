@@ -349,39 +349,57 @@ SecureStorageService secureStorage(SecureStorageRef ref) {
 ```dart
 // features/auth/presentation/controllers/auth_controller.dart
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+
 import '../../../../core/storage/secure_storage.dart';
 import '../../data/auth_repository.dart';
 import '../../domain/auth_user.dart';
 
 part 'auth_controller.g.dart';
 
-@Riverpod(keepAlive: true) // auth state ต้องอยู่ตลอดอายุแอป
+/// แหล่งความจริงเดียวของสถานะผู้ใช้ (single source of truth)
+///
+/// keepAlive: true เพราะต้องอยู่ตลอดอายุแอป
+/// - build()  : โหลด user จาก token ที่เก็บไว้ (กู้ session ตอนเปิดแอป)
+/// - login()  : เข้าสู่ระบบ → เก็บ token → state เป็น user
+/// - logout() : ลบ token → state เป็น null (ทั้งแอป redirect ไป login แบบ reactive)
+@Riverpod(keepAlive: true)
 class AuthController extends _$AuthController {
-  // build() คืน user ปัจจุบัน (null = ยังไม่ login)
   @override
   Future<AuthUser?> build() async {
+    // หน่วงเล็กน้อยตอนเปิดแอป เพื่อให้หน้า Splash แสดงสักครู่ (UX)
+    await Future<void>.delayed(const Duration(milliseconds: 1200));
     final token = await ref.watch(secureStorageProvider).readToken();
     if (token == null) return null;
-    // มี token อยู่แล้ว → ดึงข้อมูลผู้ใช้กลับมา
     return ref.watch(authRepositoryProvider).getCurrentUser(token);
   }
 
-  Future<void> login(String username, String password) async {
+  Future<void> login(
+    String username,
+    String password, {
+    bool rememberForBiometric = false,
+  }) async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
-      final result =
-          await ref.read(authRepositoryProvider).login(username, password);
-      // เก็บ token อย่างปลอดภัย
+      final result = await ref
+          .read(authRepositoryProvider)
+          .login(username, password);
       await ref.read(secureStorageProvider).saveToken(result.token);
+
+      // บันทึก credentials สำหรับ biometric login (ถ้าผู้ใช้เลือก)
+      if (rememberForBiometric) {
+        await ref.read(secureStorageProvider).saveToken(result.token);
+      }
+
       return result.user;
     });
   }
 
   Future<void> logout() async {
     await ref.read(secureStorageProvider).deleteToken();
-    state = const AsyncValue.data(null); // เคลียร์สถานะ → ทั้งแอป redirect ไป login
+    state = const AsyncValue.data(null);
   }
 }
+
 ```
 
 ```
@@ -1159,6 +1177,7 @@ SecureStorageService secureStorage(SecureStorageRef ref) {
 
 ```dart
 // lib/features/auth/domain/auth_user.dart
+// lib/features/auth/domain/auth_user.dart
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'auth_user.freezed.dart';
@@ -1166,7 +1185,7 @@ part 'auth_user.g.dart';
 
 /// ข้อมูลผู้ใช้ที่ล็อกอินอยู่ (ชั้น Domain)
 @freezed
-class AuthUser with _$AuthUser {
+abstract class AuthUser with _$AuthUser {
   const AuthUser._();
 
   const factory AuthUser({
@@ -1188,7 +1207,7 @@ class AuthUser with _$AuthUser {
 
 /// ผลลัพธ์การเข้าสู่ระบบ (token + ข้อมูลผู้ใช้) — ตรงกับ response ของ POST /auth/login
 @freezed
-class LoginResult with _$LoginResult {
+abstract class LoginResult with _$LoginResult {
   const factory LoginResult({
     required AuthUser user,
     required String token,
@@ -1204,6 +1223,7 @@ class LoginResult with _$LoginResult {
 ### ขั้นที่ 4 — AuthRepository: ครบทุก endpoint ของ /auth 🆕
 
 ```dart
+// lib/features/auth/data/auth_repository.dart
 // lib/features/auth/data/auth_repository.dart
 import 'package:dio/dio.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -1232,9 +1252,13 @@ class AuthRepository {
     } on DioException catch (e) {
       // ใช้ข้อความจากเซิร์ฟเวอร์ถ้ามี (เช่น "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง")
       final data = e.response?.data;
-      final serverMsg = data is Map<String, dynamic> ? data['message'] as String? : null;
-      throw ApiException(serverMsg ?? mapDioError(e).message,
-          statusCode: e.response?.statusCode);
+      final serverMsg = data is Map<String, dynamic>
+          ? data['message'] as String?
+          : null;
+      throw ApiException(
+        serverMsg ?? mapDioError(e).message,
+        statusCode: e.response?.statusCode,
+      );
     }
   }
 
@@ -1245,7 +1269,8 @@ class AuthRepository {
       final response = await _dio.get<Map<String, dynamic>>('/auth/me');
       return AuthUser.fromJson(response.data!);
     } on DioException catch (e) {
-      if (e.response?.statusCode == 401) return null; // token หมดอายุ → ถือว่ายังไม่ล็อกอิน
+      if (e.response?.statusCode == 401)
+        return null; // token หมดอายุ → ถือว่ายังไม่ล็อกอิน
       throw mapDioError(e);
     }
   }
@@ -1342,15 +1367,20 @@ class AuthRepository {
   /// แปลง error โดยใช้ข้อความจากเซิร์ฟเวอร์ถ้ามี (เช่น "อีเมลนี้ถูกใช้สมัครแล้ว")
   ApiException _serverError(DioException e) {
     final data = e.response?.data;
-    final msg = data is Map<String, dynamic> ? data['message'] as String? : null;
-    return ApiException(msg ?? mapDioError(e).message,
-        statusCode: e.response?.statusCode);
+    final msg = data is Map<String, dynamic>
+        ? data['message'] as String?
+        : null;
+    return ApiException(
+      msg ?? mapDioError(e).message,
+      statusCode: e.response?.statusCode,
+    );
   }
 }
 
 @riverpod
-AuthRepository authRepository(AuthRepositoryRef ref) =>
+AuthRepository authRepository(Ref ref) =>
     AuthRepository(ref.watch(dioClientProvider));
+
 ```
 
 > 🔗 **การเชื่อมโยง / จุดสังเกต:** ครบ 7 endpoint ของ `/auth` — และเพิ่มแพตเทิร์นใหม่จาก Day 2: `_serverError()` เลือกใช้ **ข้อความ error จากเซิร์ฟเวอร์ก่อน** (เช่น "รหัสผ่านเดิมไม่ถูกต้อง") ค่อย fallback เป็น `mapDioError` — ผู้ใช้เห็นสาเหตุจริง ไม่ใช่ข้อความกลาง ๆ · `getCurrentUser` ตีความ 401 เป็น "ยังไม่ล็อกอิน" (คืน null) ไม่ใช่ error เพื่อให้เปิดแอปด้วย token หมดอายุแล้วเด้งไป login เงียบ ๆ
@@ -2365,12 +2395,12 @@ class SplashPage extends StatelessWidget {
 
 ```dart
 // lib/features/auth/presentation/pages/login_page.dart
+// lib/features/auth/presentation/pages/login_page.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/icons/app_icons.dart';
-import '../../../../core/storage/secure_storage.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
@@ -2379,7 +2409,6 @@ import '../../../../core/widgets/app_logo.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../../../../core/widgets/info_hint.dart';
 import '../controllers/auth_controller.dart';
-import '../controllers/biometric_controller.dart';
 
 /// หน้าเข้าสู่ระบบ
 /// Day 3: ต่อ Reactive Auth จริง — login ผ่าน API, เก็บ token ใน Secure Storage,
@@ -2399,16 +2428,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   @override
   void initState() {
     super.initState();
-    _checkSavedCredentials();
-  }
-
-  Future<void> _checkSavedCredentials() async {
-    final hasCreds = await ref.read(secureStorageProvider).hasBiometricCredentials();
-    if (mounted) {
-      setState(() {
-        _hasSavedCredentials = hasCreds;
-      });
-    }
   }
 
   @override
@@ -2420,38 +2439,21 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
   void _login() {
     // จำ credentials อัตโนมัติ
-    ref.read(authControllerProvider.notifier).login(
-      _user.text.trim(),
-      _pass.text,
-      rememberForBiometric: true,
-    );
+    ref
+        .read(authControllerProvider.notifier)
+        .login(
+          _user.text.trim(),
+          _pass.text,
+          rememberForBiometric: true,
+        );
   }
 
   void _notSupported() {
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('เดโมนี้รองรับเฉพาะการเข้าสู่ระบบด้วยชื่อผู้ใช้')));
-  }
-
-  /// ยืนยันตัวตนด้วย Biometric แล้วเข้าสู่ระบบ
-  Future<void> _biometricLogin() async {
-    final ok = await ref.read(biometricControllerProvider.notifier).authenticate();
-    if (!mounted) return;
-
-    if (ok) {
-      final storage = ref.read(secureStorageProvider);
-      final credentials = await storage.getBiometricCredentials();
-
-      if (credentials != null) {
-        ref.read(authControllerProvider.notifier).login(
-          credentials.username,
-          credentials.password,
-          rememberForBiometric: true,
-        );
-      }
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('ยืนยันตัวตนไม่สำเร็จ')));
-    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('เดโมนี้รองรับเฉพาะการเข้าสู่ระบบด้วยชื่อผู้ใช้'),
+      ),
+    );
   }
 
   /// เปิดหน้า PIN login
@@ -2487,8 +2489,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           Container(
             decoration: const BoxDecoration(
               gradient: AppColors.headerGradient,
-              borderRadius:
-                  BorderRadius.vertical(bottom: Radius.circular(AppSpacing.rLg)),
+              borderRadius: BorderRadius.vertical(
+                bottom: Radius.circular(AppSpacing.rLg),
+              ),
             ),
             child: SafeArea(
               bottom: false,
@@ -2528,12 +2531,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           'เข้าสู่ระบบอย่างรวดเร็ว',
           style: AppType.h2,
           textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 32),
-        AppButton.primary(
-          label: 'สแกนลายนิ้วมือ',
-          icon: HugeIcons.strokeRoundedFingerPrint,
-          onPressed: _biometricLogin,
         ),
         const SizedBox(height: 16),
         AppButton.secondary(
@@ -2591,8 +2588,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
             ),
             child: Row(
               children: [
-                Icon(Icons.error_outline,
-                    size: 20, color: Colors.red.shade700),
+                Icon(Icons.error_outline, size: 20, color: Colors.red.shade700),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
@@ -2617,9 +2613,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         Center(
           child: TextButton(
             onPressed: () => context.push('/forgot-password'),
-            child: Text('ลืมรหัสผ่าน?',
-                style: AppType.bodyStrong
-                    .copyWith(color: AppColors.primary)),
+            child: Text(
+              'ลืมรหัสผ่าน?',
+              style: AppType.bodyStrong.copyWith(color: AppColors.primary),
+            ),
           ),
         ),
         const _OrDivider(label: 'หรือดำเนินการต่อด้วย'),
@@ -2646,8 +2643,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         ),
         const SizedBox(height: 20),
         Center(
-          child: Text('กรุงเทพประกันชีวิต จำกัด (มหาชน) · v1.0.0',
-              style: AppType.caption),
+          child: Text(
+            'กรุงเทพประกันชีวิต จำกัด (มหาชน) · v1.0.0',
+            style: AppType.caption,
+          ),
         ),
       ],
     );
@@ -2676,6 +2675,7 @@ class _OrDivider extends StatelessWidget {
     );
   }
 }
+
 ```
 
 > 🔗 **การเชื่อมโยง / จุดสังเกต:**
