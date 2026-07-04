@@ -2370,8 +2370,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/icons/app_icons.dart';
-import '../../../../core/l10n/l10n_ext.dart';
-import '../../../../l10n/app_localizations.dart';
 import '../../../../core/storage/secure_storage.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -2430,8 +2428,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   }
 
   void _notSupported() {
-    ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.l10n.demoUsernameOnly)));
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('เดโมนี้รองรับเฉพาะการเข้าสู่ระบบด้วยชื่อผู้ใช้')));
   }
 
   /// ยืนยันตัวตนด้วย Biometric แล้วเข้าสู่ระบบ
@@ -2452,7 +2450,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.l10n.biometricAuthFailed)));
+        const SnackBar(content: Text('ยืนยันตัวตนไม่สำเร็จ')));
     }
   }
 
@@ -2470,7 +2468,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    final l = context.l10n;
     final authState = ref.watch(authControllerProvider);
     final loading = authState.isLoading;
     final hasError = authState.hasError && !authState.isLoading;
@@ -2502,7 +2499,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     const AppLogo(size: 76),
                     const SizedBox(height: 14),
                     Text(
-                      l.loginSubtitle,
+                      'เข้าสู่ระบบเพื่อจัดการกรมธรรม์ของคุณ',
                       textAlign: TextAlign.center,
                       style: AppType.body.copyWith(color: Colors.white70),
                     ),
@@ -2514,8 +2511,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
             child: _hasSavedCredentials == true
-                ? _buildQuickLoginOptions(l)
-                : _buildPasswordLoginForm(l, loading, hasError, authState),
+                ? _buildQuickLoginOptions()
+                : _buildPasswordLoginForm(loading, hasError, authState),
           ),
         ],
       ),
@@ -2523,24 +2520,24 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   }
 
   /// UI สำหรับผู้ใช้ที่มี credentials บันทึกไว้ (หลัง logout)
-  Widget _buildQuickLoginOptions(AppLocalizations l) {
+  Widget _buildQuickLoginOptions() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
-          l.quickSignInTitle,
+          'เข้าสู่ระบบอย่างรวดเร็ว',
           style: AppType.h2,
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 32),
         AppButton.primary(
-          label: l.scanFingerprint,
+          label: 'สแกนลายนิ้วมือ',
           icon: HugeIcons.strokeRoundedFingerPrint,
           onPressed: _biometricLogin,
         ),
         const SizedBox(height: 16),
         AppButton.secondary(
-          label: l.usePin,
+          label: 'ใช้ PIN',
           icon: HugeIcons.strokeRoundedFingerPrintScan,
           onPressed: _pinLogin,
         ),
@@ -2549,7 +2546,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           child: TextButton(
             onPressed: _usePasswordLogin,
             child: Text(
-              l.signInWithPassword,
+              'เข้าสู่ระบบด้วยรหัสผ่าน',
               style: AppType.bodyStrong.copyWith(color: AppColors.primary),
             ),
           ),
@@ -2560,7 +2557,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
   /// UI สำหรับ login ครั้งแรก (แสดงฟอร์ม)
   Widget _buildPasswordLoginForm(
-    AppLocalizations l,
     bool loading,
     bool hasError,
     AsyncValue<dynamic> authState,
@@ -2569,21 +2565,21 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         AppTextField(
-          label: l.usernameLabel,
+          label: 'ชื่อผู้ใช้',
           hint: 'customer',
           icon: HugeIcons.strokeRoundedUser,
           controller: _user,
         ),
         const SizedBox(height: 14),
         AppTextField(
-          label: l.passwordLabel,
+          label: 'รหัสผ่าน',
           hint: '••••',
           icon: HugeIcons.strokeRoundedSquareLock01,
           obscure: true,
           controller: _pass,
         ),
         const SizedBox(height: 12),
-        InfoHint(l.testAccountInfo),
+        const InfoHint('บัญชีทดสอบ: ชื่อผู้ใช้ customer / รหัสผ่าน 1234'),
         if (hasError) ...[
           const SizedBox(height: 12),
           Container(
@@ -2613,7 +2609,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         ],
         const SizedBox(height: 18),
         AppButton.primary(
-          label: loading ? l.signingIn : l.signIn,
+          label: loading ? 'กำลังเข้าสู่ระบบ...' : 'เข้าสู่ระบบ',
           icon: HugeIcons.strokeRoundedLogin03,
           onPressed: loading ? null : _login,
         ),
@@ -2621,36 +2617,37 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         Center(
           child: TextButton(
             onPressed: () => context.push('/forgot-password'),
-            child: Text(l.forgotPasswordLink,
+            child: Text('ลืมรหัสผ่าน?',
                 style: AppType.bodyStrong
                     .copyWith(color: AppColors.primary)),
           ),
         ),
-        _OrDivider(label: l.orContinueWith),
+        const _OrDivider(label: 'หรือดำเนินการต่อด้วย'),
         const SizedBox(height: 16),
         AppButton.social(
-          label: l.continueWithGoogle,
+          label: 'ดำเนินการต่อด้วย Google',
           icon: HugeIcons.strokeRoundedGoogle,
           color: const Color(0xFF4285F4),
           onPressed: _notSupported,
         ),
         const SizedBox(height: 12),
         AppButton.social(
-          label: l.continueWithLine,
+          label: 'ดำเนินการต่อด้วย LINE',
           icon: HugeIcons.strokeRoundedBubbleChat,
           color: const Color(0xFF06C755),
           onPressed: _notSupported,
         ),
-        _OrDivider(label: l.noAccountYet),
+        const _OrDivider(label: 'ยังไม่มีบัญชี?'),
         const SizedBox(height: 16),
         AppButton.secondary(
-          label: l.signUp,
+          label: 'สมัครสมาชิก',
           icon: HugeIcons.strokeRoundedUserAdd01,
           onPressed: () => context.push('/register'),
         ),
         const SizedBox(height: 20),
         Center(
-          child: Text(l.appFooter, style: AppType.caption),
+          child: Text('กรุงเทพประกันชีวิต จำกัด (มหาชน) · v1.0.0',
+              style: AppType.caption),
         ),
       ],
     );
