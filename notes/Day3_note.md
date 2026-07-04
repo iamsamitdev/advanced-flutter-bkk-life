@@ -473,21 +473,19 @@ void applySslPinning(Dio dio) {
 วิธีดึง SPKI fingerprint ของเซิร์ฟเวอร์ (รันบนเครื่อง dev ล่วงหน้า):
 
 ```bash
-openssl s_client -connect api.bla-demo.example.com:443 -servername api.bla-demo.example.com < /dev/null 2>/dev/null \
-  | openssl x509 -pubkey -noout \
-  | openssl pkey -pubin -outform der \
-  | openssl dgst -sha256 -binary \
-  | openssl enc -base64
+ openssl s_client -connect bla-mock-api.onrender.com:443 \ -servername bla-mock-api.onrender.com 2>/dev/null \
+  | openssl x509 -outform der
+  | openssl dgst -sha256 -binary
+  | openssl base64
 ```
 
 ตัวอย่างของ ดึง SPKI SHA-256 fingerprint ของ www.google.com:
 
 ```bash
 openssl s_client -connect www.google.com:443 -servername www.google.com < /dev/null 2>/dev/null \
-  | openssl x509 -pubkey -noout \
-  | openssl pkey -pubin -outform der \
-  | openssl dgst -sha256 -binary \
-  | openssl enc -base64
+  | openssl x509 -outform der
+  | openssl dgst -sha256 -binary
+  | openssl base64
 ```
 
 **อธิบายแต่ละขั้นของ pipeline** (5 ขั้นตอน ต่อกันเพื่อแปลง certificate → public key → SPKI hash → base64):
